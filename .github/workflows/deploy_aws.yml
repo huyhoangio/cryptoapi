@@ -2,7 +2,6 @@ name: Deploy to AWS
 
 on: [push, pull_request]
 
-
 jobs:   
   deploy_test_image:
     runs-on: ubuntu-latest    
@@ -68,4 +67,11 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cryptoapi:latest
+
+      # - name: slack notification
+      #   uses: bryannice/gitactions-slack-notification@2.0.0
+      #   env:
+      #     SLACK_INCOMING_WEBHOOK: ${{ secrets.SLACK_INCOMING_WEBHOOK }}
+      #     SLACK_MESSAGE: 'New prod image has been pushed'
+      #     SLACK_TITLE: 'Prod image pushed'
       
