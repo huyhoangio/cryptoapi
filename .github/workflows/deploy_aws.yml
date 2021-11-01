@@ -12,9 +12,9 @@ jobs:
         run: |
           echo ${{ secrets.COINBASE_SPOT_ENDPOINT }} > .env
           docker build -t mock_api .
-          docker run -d -p "5000:5000" mockapi
+          docker run -d -p "5000:5000" mock_api
       
-      - name: Sleep for 10 seconds to make sure the container is running
+      - name: Sleep for 5 seconds to make sure the container is running
         uses: jakejarvis/wait-action@master
         with:
           time: '5s'
