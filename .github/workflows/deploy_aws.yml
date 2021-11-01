@@ -37,15 +37,25 @@ jobs:
           - 5000:5000
     
     steps:
-      - name: get health from mock_api, fail if the container is not running
-        id: test_service_up_and_running
-        run: "curl -s -X GET http://localhost:5000/health"
-        
-      - name: assert
-        uses: nick-invision/assert-action@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          expected: "It is running"
-          actual: ${{ steps.test_service_up_and_running.outputs }}
+          python-version: '3.8' 
+    
+      - name: run test file
+        run: |
+          pip install requests
+          pytest test_app.py
+
+      # - name: get health from mock_api, fail if the container is not running
+      #   id: test_service_up_and_running
+      #   run: "curl -s -X GET http://localhost:5000/health"
+        
+      # - name: assert
+      #   uses: nick-invision/assert-action@v1
+      #   with:
+      #     expected: "It is running"
+      #     actual: ${{ steps.test_service_up_and_running.outputs }}
 
       # - name: get price for not supported currency
       #   id: test_not_legit_currency
