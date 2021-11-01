@@ -11,7 +11,7 @@ jobs:
       - name: spin up the api
         run: docker-compose up --build
         env:
-          COINBASE_SPOT_ENDPOINT = ${{ secrets.COINBASE_SPOT_ENDPOINT }}
+          COINBASE_SPOT_ENDPOINT: ${{ secrets.COINBASE_SPOT_ENDPOINT }}
       
       - name: set up python
         uses: actions/setup-python@v2
