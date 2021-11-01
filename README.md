@@ -6,7 +6,7 @@ This is a small project to demonstrate an automation pipeline in Github Action. 
 
 ## The pipeline
 
-The pipeline consists of three different stages:
+The pipeline consists of three different stages, secrets like github credentials are stored in git Secrets page and pass into the pipeline when needed:
 
 1. Build the docker image of the api and push to the Dockerhub repo as `:test` image. `:test` is chosen for simplicity, it can be tagged with the commit message to make sure developers won't accidentally overwrite each other's test images. Unittest can be done at this stage if we'd like to.
 
