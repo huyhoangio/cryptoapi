@@ -5,13 +5,13 @@ on: [push]
 jobs:
   test_api:
     runs-on: ubuntu-latest
+    env:
+      COINBASE_SPOT_ENDPOINT: ${{ secrets.COINBASE_SPOT_ENDPOINT }}
     steps:
       - uses: actions/checkout@v2
 
       - name: spin up the api
-        run: docker-compose up --build
-        env:
-          COINBASE_SPOT_ENDPOINT: ${{ secrets.COINBASE_SPOT_ENDPOINT }}
+        run: docker-compose up --build       
       
       - name: set up python
         uses: actions/setup-python@v2
