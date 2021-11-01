@@ -47,68 +47,45 @@ jobs:
           pip install requests
           pip install pytest
           pytest test_app.py
+    
+    terraform:
+      needs: run_test
+      runs-on: ubuntu-latest
+      steps:
+        - name: set up terraform
+          uses: hashicorp/setup-terraform@v1
 
-      # - name: get health from mock_api, fail if the container is not running
-      #   id: test_service_up_and_running
-      #   run: "curl -s -X GET http://localhost:5000/health"
+        - name: Install terraform cli
+          uses: hashicorp/setup-terraform@v1
+          with:
+            terraform_version: 0.12.25
         
-      # - name: assert
-      #   uses: nick-invision/assert-action@v1
-      #   with:
-      #     expected: "It is running"
-      #     actual: ${{ steps.test_service_up_and_running.outputs }}
-
-      # - name: get price for not supported currency
-      #   id: test_not_legit_currency
-      #   run: "curl -s  -o /dev/nul -w %{http_code} localhost:5000/VND"
+        - name: setup terraform credentials
+          uses: hashicorp/setup-terraform@v1
+          with:
+            cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
         
-      # - name: assert
-      #   uses: nick-invision/assert-action@v1
-      #   with:
-      #     expected: 404
-      #     actual: ${{ steps.test_not_legit_currency.outputs.value }}
-      #   continue-on-error: true
-      
-      # - name: get price for supported currency
-      #   id: test_legit_currency
-      #   run: "curl -s  -o /dev/nul -w %{http_code} localhost:5000/VND"
+        - name: terraform format
+          id: fmt
+          run: terraform fmt -check
+
+        - name: terraform init
+          id: init
+          run: terraform init
+
+        - name: terraform validate
+          id: validate
+          run: terraform validate -no-color
+
+        - name: terraform plan
+          id: plan
+          run: terraform plan --no-color
+
+        - name: get status of terraform plan
+          if: steps.plan.outcome == 'failure'
+          run: exit 1
         
-      # - name: assert
-      #   uses: nick-invision/assert-action@v1
-      #   with:
-      #     expected: 404
-      #     actual: ${{ steps.test_not_legit_currency.outputs.value }}
-        
-
-      # - name: image digest
-      #   run: echo ${{ steps.docker_build.outputs.digest }}
-        
-      # - name: set up terraform
-      #   uses: hashicorp/setup-terraform@v1
-
-      # - name: Install terraform cli
-      #   uses: hashicorp/setup-terraform@v1
-      #   with:
-      #     terraform_version: 0.12.25
-      
-      # - name: setup terraform credentials
-      #   uses: hashicorp/setup-terraform@v1
-      #   with:
-      #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-      
-      # - name: terraform format
-      #   id: fmt
-      #   run: terraform fmt -check
-
-      # - name: terraform init
-      #   id: init
-      #   run: terraform init
-
-      # - name: terraform validate
-      #   id: validate
-      #   run: terraform validate -no-color
-
-      # - name: terraform plan
-      #   id: plan
-      #   run: terraform plan
+        - name: terraform apply
+          id: apply
+          run: terraform apply --auto-approve --no-color
       

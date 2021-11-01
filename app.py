@@ -11,7 +11,7 @@ def get_currency_exchange(currency):
 	acceptable_currency = ['EUR', 'GBP', 'USD', 'JPY']
 	if currency not in acceptable_currency:
 		return make_response(jsonify({ 'error': 'currency not supported'}), 404)
-	print(COINBASE_SPOT_ENDPOINT)
+	
 	r = requests.get('{0}{1}'.format(COINBASE_SPOT_ENDPOINT, currency))		
 	if r.status_code == 404:
 		return make_response(jsonify({ 'error': 'currency not available on coinbase'}), 404)
