@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: spin up the api
-        run: docker-compose up --build -e COINBASE_SPOT_ENDPOINT=${{ secrets.COINBASE_SPOT_ENDPOINT }}       
+        run: docker-compose up -d --build -e COINBASE_SPOT_ENDPOINT=${{ secrets.COINBASE_SPOT_ENDPOINT }}       
       
       - name: set up python
         uses: actions/setup-python@v2
