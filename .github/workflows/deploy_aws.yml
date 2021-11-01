@@ -32,8 +32,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         env:
-          COINBASE_SPOT_ENDPOINT: https://api.coinbase.com/v2/prices/spot?currency=
-        options: -d
+          COINBASE_SPOT_ENDPOINT: https://api.coinbase.com/v2/prices/spot?currency=        
         ports:
           - 5000:5000
     
