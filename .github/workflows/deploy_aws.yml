@@ -45,6 +45,7 @@ jobs:
       - name: run test file
         run: |
           pip install requests
+          pip install pytest
           pytest test_app.py
 
       # - name: get health from mock_api, fail if the container is not running
