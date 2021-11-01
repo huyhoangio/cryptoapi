@@ -39,11 +39,15 @@ jobs:
     runs-on: ubuntu-latest
     
     services:
-      image: huyhoangio/cryptoapi:test
-      ports:
-        - 5000:5000
+      mock_api:
+        image: huyhoangio/cryptoapi:test
+        ports:
+          - 5000:5000
     
     steps:
+      - name: get health from moc_api
+        run: http://localhost:5000/health
+        
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
