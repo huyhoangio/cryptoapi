@@ -40,6 +40,7 @@ jobs:
       - name: get health from mock_api, fail if the container is not running
         id: test_service_up_and_running
         run: "curl -s  -o /dev/nul -w %{http_code} localhost:5000/health"
+        continue-on-error: true
 
       - name: assert
         uses: nick-invision/assert-action@v1
@@ -49,6 +50,17 @@ jobs:
 
       - name: get price for not supported currency
         id: test_not_legit_currency
+        run: "curl -s  -o /dev/nul -w %{http_code} localhost:5000/VND"
+        
+      - name: assert
+        uses: nick-invision/assert-action@v1
+        with:
+          expected: 404
+          actual: ${{ steps.test_not_legit_currency.outputs.value }}
+        continue-on-error: true
+      
+      - name: get price for supported currency
+        id: test_legit_currency
         run: "curl -s  -o /dev/nul -w %{http_code} localhost:5000/VND"
         
       - name: assert
