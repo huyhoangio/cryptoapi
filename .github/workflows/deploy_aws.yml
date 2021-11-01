@@ -11,7 +11,12 @@ jobs:
       - name: spin up the api
         run: |
           echo ${{ secrets.COINBASE_SPOT_ENDPOINT }} > .env
-          docker-compose up -d --build       
+          docker-compose up -d --build
+      
+      - name: Sleep for 10 seconds to make sure the container is running
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '10s'
       
       - name: set up python
         uses: actions/setup-python@v2
