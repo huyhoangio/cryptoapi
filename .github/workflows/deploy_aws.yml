@@ -11,12 +11,16 @@ jobs:
       - name: spin up the api
         run: |
           echo ${{ secrets.COINBASE_SPOT_ENDPOINT }} > .env
-          docker-compose up -d --build
+          docker build -t mock_api .
+          docker run -d -p "5000:5000" mockapi
       
       - name: Sleep for 10 seconds to make sure the container is running
         uses: jakejarvis/wait-action@master
         with:
-          time: '10s'
+          time: '5s'
+      
+      - name: make sure docker container is up
+        run: docker ps
       
       - name: set up python
         uses: actions/setup-python@v2
