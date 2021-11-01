@@ -37,14 +37,15 @@ jobs:
           - 5000:5000
     
     steps:
-      - name: get health from moc_api
-        run: "curl localhost:5000/health"
+      - name: get health from mock_api, fail if the container is not running
+        run: "curl localhost:5001/health"
 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.7'
-      - run: pytest test_app.py
+      - name: get price for supported currency
+        uses: "curl localhost:5000/USD"
+
+      - name: get price for not supported currency
+        uses: "curl localhost:5000/VND"
+        
 
       # - name: image digest
       #   run: echo ${{ steps.docker_build.outputs.digest }}
