@@ -14,9 +14,11 @@ jobs:
           tags: mock_api:latest
           push: false
         
-      - uses: addnab/docker-run-action@v3
+      - name: start mock api
+        uses: addnab/docker-run-action@v3
         with:
           image: mock_api:latest
+          options: -e COINBASE_SPOT_ENDPOINT=${{ secrets.COINBASE_SPOT_ENDPOINT }}
 
       - name: Sleep for 5 seconds to make sure the container is running
         uses: jakejarvis/wait-action@master
