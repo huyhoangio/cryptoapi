@@ -39,7 +39,7 @@ jobs:
     steps:
       - name: get health from mock_api, fail if the container is not running
         id: test_service_up_and_running
-        run: "curl localhost:5000/health"
+        run: "curl -s -X GET localhost:5000/health"
         
       - name: assert
         uses: nick-invision/assert-action@v1
