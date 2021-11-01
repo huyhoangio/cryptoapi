@@ -2,32 +2,10 @@ name: Deploy to AWS
 
 on: [push]
 
-jobs:
-  test_and_deploy:
+jobs:   
+  deploy_test_image:
     runs-on: ubuntu-latest    
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: build mock api
-        uses: docker/build-push-action@v2
-        with:
-          tags: mock_api:latest
-          push: false
-        
-      - name: start mock api
-        uses: addnab/docker-run-action@v3
-        with:
-          image: mock_api:latest
-          options: -e COINBASE_SPOT_ENDPOINT=${{ secrets.COINBASE_SPOT_ENDPOINT }}
-
-      - name: Sleep for 5 seconds to make sure the container is running
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '5s'
-      
-      - name: make sure docker container is up
-        run: docker ps
-      
+    steps:  
       - name: set up python
         uses: actions/setup-python@v2
         with:
@@ -54,42 +32,53 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cryptoapi:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cryptoapi:test
+  
+  run_test:
+    needs: deploy_test_image
+    runs-on: ubuntu-latest
+    
+    services:
+      image: ${{ secrets.DOCKER_HUB_USERNAME }}/cryptoapi:test
+      ports:
+        - 5000:5000
+    
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+      - run: pytest test_app.py
 
-      - name: image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+      # - name: image digest
+      #   run: echo ${{ steps.docker_build.outputs.digest }}
+        
+      # - name: set up terraform
+      #   uses: hashicorp/setup-terraform@v1
+
+      # - name: Install terraform cli
+      #   uses: hashicorp/setup-terraform@v1
+      #   with:
+      #     terraform_version: 0.12.25
       
-  # setup_terraform:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-
-  #     - name: pick action
-  #       uses: hashicorp/setup-terraform@v1
-
-  #     - name: Install terraform cli
-  #       uses: hashicorp/setup-terraform@v1
-  #       with:
-  #         terraform_version: 0.12.25
+      # - name: setup terraform credentials
+      #   uses: hashicorp/setup-terraform@v1
+      #   with:
+      #     cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
       
-  #     - name: setup terraform credentials
-  #       uses: hashicorp/setup-terraform@v1
-  #       with:
-  #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-      
-  #     - name: terraform format
-  #       id: fmt
-  #       run: terraform fmt -check
+      # - name: terraform format
+      #   id: fmt
+      #   run: terraform fmt -check
 
-  #     - name: terraform init
-  #       id: init
-  #       run: terraform init
+      # - name: terraform init
+      #   id: init
+      #   run: terraform init
 
-  #     - name: terraform validate
-  #       id: validate
-  #       run: terraform validate -no-color
+      # - name: terraform validate
+      #   id: validate
+      #   run: terraform validate -no-color
 
-  #     - name: terraform plan
-  #       id: plan
-  #       run: terraform plan
+      # - name: terraform plan
+      #   id: plan
+      #   run: terraform plan
       
