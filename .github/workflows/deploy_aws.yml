@@ -1,6 +1,7 @@
 name: Deploy to AWS
 
-on: [push]
+on: [push, pull_request]
+
 
 jobs:   
   deploy_test_image:
@@ -47,45 +48,24 @@ jobs:
           pip install requests
           pip install pytest
           pytest test_app.py
-    
-    terraform:
-      needs: run_test
-      runs-on: ubuntu-latest
-      steps:
-        - name: set up terraform
-          uses: hashicorp/setup-terraform@v1
+  
+  deploy_prod_image:
+    needs: run_test
+    runs-on: ubuntu-latest
 
-        - name: Install terraform cli
-          uses: hashicorp/setup-terraform@v1
-          with:
-            terraform_version: 0.12.25
-        
-        - name: setup terraform credentials
-          uses: hashicorp/setup-terraform@v1
-          with:
-            cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-        
-        - name: terraform format
-          id: fmt
-          run: terraform fmt -check
+    steps:
+      # - name: log in to dockerhub
+      #   uses: docker/login-action@v1
+      #   with:
+      #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-        - name: terraform init
-          id: init
-          run: terraform init
+      - name: setup Docker buildx
+        uses: docker/setup-buildx-action@v1
 
-        - name: terraform validate
-          id: validate
-          run: terraform validate -no-color
-
-        - name: terraform plan
-          id: plan
-          run: terraform plan --no-color
-
-        - name: get status of terraform plan
-          if: steps.plan.outcome == 'failure'
-          run: exit 1
-        
-        - name: terraform apply
-          id: apply
-          run: terraform apply --auto-approve --no-color
+      - name: build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/cryptoapi:latest
       
