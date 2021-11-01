@@ -25,8 +25,6 @@ provider "aws" {
   region = "us-west-2"
 }
 
-
-
 resource "random_pet" "sg" {}
 
 resource "aws_instance" "web" {
@@ -41,7 +39,7 @@ resource "aws_instance" "web" {
               EOF
 }
 
-resource "aws_security_group" "web-sg" {
+resource "docker_container" "ubutu" {
   name = "${random_pet.sg.id}-sg"
   ingress {
     from_port   = 5000
